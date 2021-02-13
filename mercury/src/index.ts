@@ -16,7 +16,6 @@ const ws = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
 app.get("/", (req, res) => {
   return res
     .status(200)

@@ -5,20 +5,21 @@ export class WebSocketServer {
   static socket: any;
   static initialized: boolean;
 
-  public static setServer(server: Server) {
+  static setServer(server: Server) {
     if (!WebSocketServer.initialized) {
       const ws = new WebSocketServer();
       WebSocketServer.initialized = true;
-      ws.initialize(server, ws);
+      ws.initialize(server);
     }
     return;
   }
 
   constructor() {}
 
-  private initialize(server: Server, ins: WebSocketServer) {
+  private initialize(server: Server) {
     server.on("connection", (socket) => {
       WebSocketServer.socket = socket;
+
       console.log(`New client connected id: ${socket.id}`);
       Room.events();
       socket.on("disconnect", () =>

@@ -22,8 +22,10 @@ export class Room {
     const socket = WebSocketServer.socket;
     socket.on("create-room", () => new Room(socket.id));
     socket.on("join", (room: string) => {
+      console.log("PHONE WANTS TO JOIN");
       socket.join(room);
       socket.to(room).emit("phoneJoined");
+      socket.emit("connection-stablish");
     });
 
     socket.on("send", ({ room, data }: { room: string; data: any }) => {

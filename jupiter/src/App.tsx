@@ -11,7 +11,6 @@ function App() {
   useEffect(() => {
     const socket = io(ENDPOINT);
     socket.emit("create-room");
-
     socket.on("created", (data: any) => {
       console.log("created", data);
       setQRValue(data);
