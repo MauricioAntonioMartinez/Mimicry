@@ -1,17 +1,31 @@
 version: "3.8"
 
 services:
-  jupiter:
-    container_name: jupiter
-    build: ./jupiter
-    volumes:
-      - ./jupiter:/jupiter
-    ports:
-      - "3000:3000"
+  # jupiter:
+  #   container_name: jupiter
+  #   build: ./jupiter
+  #   volumes:
+  #     - ./jupiter:/jupiter
+  #   ports:
+  #     - "3000:3000"
   mercury:
     container_name: mercury
     build: ./mercury
     volumes:
       - ./mercury:/mercury
+    env_file:
+      - ./env/backend.env
     ports:
       - "4000:4000"
+  mongo:
+    container_name: mongo
+    image: mongo
+    env_file:
+      - ./env/mongo.env
+    volumes:
+      - mercury-data:/data/eb
+    ports:
+      - "8888:27017"
+
+volumes:
+  mercury-data:

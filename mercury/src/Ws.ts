@@ -1,30 +1,32 @@
 import { Server } from "socket.io";
-import { Room } from "./Room";
+import Room from "./topics/Room";
 
 export class WebSocketServer {
-  static socket: any;
-  static initialized: boolean;
+  private _socket: any;
+  private events = {
+    connect: "connect",
+    disconnect: "disconnect",
+  };
 
-  static setServer(server: Server) {
-    if (!WebSocketServer.initialized) {
-      const ws = new WebSocketServer();
-      WebSocketServer.initialized = true;
-      ws.initialize(server);
-    }
-    return;
+  get socket() {
+    return this._socket;
   }
 
-  constructor() {}
+  constructor(private server: Server) {
+    this.server = server;
+    this.initialize();
+  }
 
-  private initialize(server: Server) {
-    server.on("connection", (socket) => {
-      WebSocketServer.socket = socket;
-
-      console.log(`New client connected id: ${socket.id}`);
-      Room.events();
-      socket.on("disconnect", () =>
-        console.log(`Client ${socket.id} disconnected`)
-      );
+  private initialize() {
+    this.server.on(this.events.connect, (socket) => {
+      console.log(`Connected ${socket.id}`);
+      this._socket = socket;
+      Room.listen();
+      socket.on(this.events.disconnect, this.onDisconnect.bind(this));
     });
+  }
+
+  private onDisconnect() {
+    console.log(`Disconnect ${this._socket.id}`);
   }
 }
