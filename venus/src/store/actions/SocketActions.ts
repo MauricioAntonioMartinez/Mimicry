@@ -1,24 +1,13 @@
-import * as DeviceInfo from "expo-device";
-import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Socket } from "socket.io-client";
-import { _web_ } from "../../constant/platform";
 import { Actions } from "../../lib/actions";
-import { Device } from "../../lib/device";
 import { AppThunk } from "../../lib/reduxTypes";
 import { SocketDispatcher } from "../../models/SocketDispatcher";
 
-export const setSocket = (socket: Socket): AppThunk<Promise<any>> => {
-  return async (dispatch) => {
-    new SocketDispatcher(socket, dispatch).listen();
-    const device: Device = {
-      id: Platform.OS,
-      os: DeviceInfo.osName as string,
-      version: DeviceInfo.osVersion as string,
-      type: Platform.OS,
-    };
-    if (!_web_) device["name"] = DeviceInfo.deviceName as string;
-
-    socket.emit("join", device);
+export const setSocket = (socket: Socket): AppThunk<any> => {
+  return (dispatch, getStore) => {
+    const store = getStore();
+    if (!store.socket.socket) new SocketDispatcher(socket, dispatch).listen();
     dispatch({
       type: Actions.SET_SOCKET,
       payload: {
@@ -28,11 +17,20 @@ export const setSocket = (socket: Socket): AppThunk<Promise<any>> => {
   };
 };
 
-export const connectToDesktop = (deskId: string): AppThunk<any> => {
-  return (_, getState) => {
-    const state = getState();
-    const socket = state.socket.socket;
+export const leaveSocket = (): AppThunk<any> => {
+  return async (dispatch, getStore) => {
+    const socket = getStore().socket.socket;
     if (!socket) return;
-    socket.emit("join", deskId);
+    const id = await AsyncStorage.getItem("id");
+    socket.emit("leave", id);
+    dispatch({
+      type: Actions.SET_DEVICES,
+      payload: {
+        devices: [],
+      },
+    });
+    dispatch({
+      type: Actions.DISCONNECT,
+    });
   };
 };

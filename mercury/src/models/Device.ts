@@ -2,13 +2,12 @@ import mongoose from "mongoose";
 
 export interface DeviceAttrs {
   name?: string;
-  host?: string;
   type: "ios" | "android" | "windows" | "macos" | "web";
-  osName: string;
-  osVersion: string;
+  os: string;
+  version: string;
 }
 
-interface DeviceDoc extends mongoose.Document {
+export interface DeviceDoc extends mongoose.Document {
   name?: string;
   host?: string;
   type: "ios" | "android" | "windows" | "macos" | "web";
@@ -29,11 +28,11 @@ const deviceSchema = new mongoose.Schema<DeviceDoc>({
     required: true,
     enum: ["ios", "android", "windows", "macos", "web"],
   },
-  osName: {
+  os: {
     type: String,
     required: true,
   },
-  osVersion: {
+  version: {
     type: String,
     required: true,
   },

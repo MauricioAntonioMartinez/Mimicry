@@ -6,21 +6,25 @@ const initialState: RootStore["socket"] = {
   connected: false,
 };
 
-export const socketReducer = (state = initialState, action: Action) => {
+export const socketReducer = (
+  state = initialState,
+  action: Action
+): RootStore["socket"] => {
   switch (action.type) {
     case Actions.SET_SOCKET:
       return {
+        connected: true,
         socket: action.payload.socket,
       };
-    case Actions.CONNECTED_DESKTOP:
+    case Actions.CONNECTED:
       return {
         ...state,
         connected: true,
       };
-    case Actions.CONNECTED_DESKTOP:
+    case Actions.DISCONNECT:
       return {
         ...state,
-        connected: true,
+        connected: false,
       };
     default:
       return state;

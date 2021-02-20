@@ -5,7 +5,6 @@ export const Card: React.FC<PropsWithChildren<{ style?: ViewStyle }>> = ({
   children,
   style,
 }) => {
-  console.log(style);
   return <View style={{ ...styles.container, ...style }}>{children}</View>;
 };
 

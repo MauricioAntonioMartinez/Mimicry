@@ -19,14 +19,25 @@ export class WebSocketServer {
 
   private initialize() {
     this.server.on(this.events.connect, (socket) => {
-      console.log(`Connected ${socket.id}`);
+      // console.log(`Connected ${socket.id}`);
       this._socket = socket;
+
+      // this.server.of("/").adapter.on("create-room", (room) => {
+      //   console.log(`ROOM CREATED ${room} `);
+      // });
+      // this.server.of("/").adapter.on("join-room", (room, id) => {
+      //   console.log(`New Join ${room} id:${id}`);
+      // });
+
+      // this.server.of("/").adapter.on("leave-room", (room, id) => {
+      //   console.log(`Leave Room ${room} id:${id}`);
+      // });
       Room.listen();
-      socket.on(this.events.disconnect, this.onDisconnect.bind(this));
+      socket.on("disconnect", this.onDisconnect.bind(this));
     });
   }
 
-  private onDisconnect() {
-    console.log(`Disconnect ${this._socket.id}`);
+  private async onDisconnect() {
+    // await leaveRoomHandler();
   }
 }

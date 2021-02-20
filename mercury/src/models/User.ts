@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { DeviceAttrs } from "./Device";
 
 interface UserAttrs {
   name: string;
@@ -10,7 +11,7 @@ interface UserDoc extends mongoose.Document {
   name: string;
   username: string;
   roomId: string;
-  devices: { device: string; active: boolean }[];
+  devices: { socketId: string; device: DeviceAttrs }[];
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -32,13 +33,24 @@ const UserSchema = new mongoose.Schema<UserDoc>({
   },
   devices: [
     {
-      deviceId: {
-        type: mongoose.Types.ObjectId,
-        ref: "Device",
-      },
-      active: {
-        type: Boolean,
-        default: false,
+      socketId: String,
+      device: {
+        // type: mongoose.Types.ObjectId,
+        // ref: "Device",
+        name: { type: String, required: false },
+        type: {
+          type: String,
+          required: true,
+          enum: ["ios", "android", "windows", "macos", "web"],
+        },
+        os: {
+          type: String,
+          required: true,
+        },
+        version: {
+          type: String,
+          required: true,
+        },
       },
     },
   ],
@@ -48,4 +60,6 @@ UserSchema.static("build", (attrs: UserAttrs) => {
   return new User(attrs);
 });
 
-export const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);
+const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);
+
+export default User;

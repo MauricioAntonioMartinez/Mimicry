@@ -12,6 +12,8 @@ export interface RootStore {
   };
   auth: {
     token?: string;
+    expiresIn?: number;
+    refreshToken?: string;
     user: { username: string; picture: string };
   };
 }

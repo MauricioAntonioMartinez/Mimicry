@@ -9,4 +9,3 @@ export const DevicesScreen = () => {
   return <Devices devices={devices} />;
 };
 
-const styles = StyleSheet.create({});

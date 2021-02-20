@@ -4,19 +4,25 @@ import { Action, Actions } from "../../lib/actions";
 const initialState: RootStore["auth"] = {
   user: {
     picture: "",
-    username: "",
+    username: "mcuve",
   },
-  token: "xxxxx",
+  token: "mcuve",
 };
 
-export const devicesReducer = (
+export const authReducer = (
   state = initialState,
   action: Action
 ): RootStore["auth"] => {
   switch (action.type) {
+    case Actions.SET_AUTH:
+      return {
+        ...state,
+        token: action.payload.token,
+        user: action.payload.user,
+      };
     case Actions.SET_USER:
       return {
-        token: action.payload.token,
+        ...state,
         user: action.payload.user,
       };
     default:

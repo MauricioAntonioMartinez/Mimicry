@@ -1,8 +1,10 @@
+import axios from "axios";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { _web_ } from "../../constant/platform";
 import { RootStore } from "../../store";
 import * as socketActions from "../../store/actions/SocketActions";
 import Qr from "../Qr";
@@ -20,33 +22,45 @@ export const Controls = () => {
     }
   }, [isConnected]);
 
-  const connectToDesktopHandler = (deskId: string) =>
-    dispatch(socketActions.connectToDesktop(deskId));
-
   const filePickerHandler = async () => {
     const data = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
     });
     if (data.type === "success") {
+      console.log(data);
       try {
-        await FileSystem.uploadAsync(
-          "http://192.168.1.20:4000/upload-multipart",
-          data.uri,
-          {
+        const url = "http://192.168.1.20:4000/upload-multipart";
+        if (!_web_)
+          await FileSystem.uploadAsync(url, data.uri, {
             uploadType: FileSystem.FileSystemUploadType.MULTIPART,
             fieldName: "test",
-          }
-        );
+          });
+        else {
+          if (!data.file) return;
+          const formData = new FormData();
+
+          formData.append("test", data.file, data.name);
+          const config = {
+            headers: {
+              "content-type": "multipart/form-data",
+            },
+          };
+          await axios.post(url, formData, config);
+        }
       } catch (error) {
         console.log(error.message);
       }
     }
   };
 
+  const leaveHandler = () => {
+    dispatch(socketActions.leaveSocket());
+  };
+
   return (
     <Card>
       {scan && Qr ? (
-        <Qr onData={connectToDesktopHandler} cancel={() => setScan(!scan)} />
+        <Qr onData={() => {}} cancel={() => setScan(!scan)} />
       ) : (
         <View style={styles.controls}>
           <Text style={styles.scanTitle}>Scan QR Active({numUsers})</Text>
@@ -60,6 +74,8 @@ export const Controls = () => {
               color="blue"
               onPress={filePickerHandler}
             />
+
+            <Button title="Leave" color="black" onPress={leaveHandler} />
           </View>
         </View>
       )}

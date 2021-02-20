@@ -15,32 +15,25 @@ const DeviceItem = ({ device }: Props) => {
     TouchableCmp = TouchableOpacity;
   }
 
-  let Specification = (
-    <Text style={styles.name}>
-      {device.name}
-      <Text style={styles.nameLight}> {device.host}</Text>
-    </Text>
-  );
-  if (device.type === "web") {
-    Specification = (
-      <Text style={styles.name}>
-        {device.os}
-        <Text style={styles.nameLight}> osVersion: {device.version}</Text>
-      </Text>
-    );
-  }
+  const isWeb = device.type === "web";
 
   return (
     <TouchableCmp style={styles.item}>
       <View style={styles.main}>
         <View style={styles.active}></View>
-        {Specification}
+        <Text style={styles.name}>
+          {isWeb ? device.os : device.name}
+          <Text style={styles.nameLight}>
+            {` `}
+            {isWeb ? device.version : device.type}
+          </Text>
+        </Text>
       </View>
       {device.type !== "web" && (
         <View style={styles.osContainer}>
           <Text style={styles.os}>
             {device.os}
-            <Text style={styles.version}> Vrs: {device.version}</Text>
+            <Text style={styles.version}>{device.version}</Text>
           </Text>
         </View>
       )}

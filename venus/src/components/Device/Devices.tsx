@@ -13,7 +13,7 @@ export const Devices = ({ devices }: Props) => {
     <View style={styles.devices}>
       <Text style={styles.devicesTitle}>Devices</Text>
       <FlatList
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id || new Date().toString()}
         data={devices}
         renderItem={({ item }) => <DeviceItem device={item} />}
       />
