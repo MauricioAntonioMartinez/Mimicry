@@ -1,32 +1,63 @@
 import express, { Request, Response } from "express";
-import fs from "fs";
 import multer from "multer";
 import { wsServer } from "..";
-import User from "../models/User";
+import { FileEvents } from "../constants/Events";
+import { removeFile } from "../helper/removeFile";
+import { sendNotifications } from "../helper/sendNotification";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const storageImage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, `${__dirname}/../public`);
+  },
+  filename: function (req, file, cb) {
+    const extension = file.originalname.split(".").pop();
+    cb(null, `${Date.now()}.${extension}`);
+  },
+});
+
+var uploadStore = multer({ storage: storageImage });
 
 export const fileRouter = express.Router();
 
-fileRouter.post("/upload", (req: Request, res: Response) => {
-  // console.log(req.file);
-  const stream = fs.createWriteStream("./image" + Date.now() + ".png");
-  req.pipe(stream);
-  res.end("OK");
-
-  // return res.status(200).json({
-  //   success: true,
-  // });
-});
+// fileRouter.post(
+//   "/upload-multipart",
+//   upload.single("test"),
+//   async (req: Request, res: Response) => {
+//     console.log(req.file);
+//     sendFile(req, "");
+//     return res.status(200);
+//   }
+// );
 
 fileRouter.post(
   "/upload-multipart",
-  upload.single("test"),
+  uploadStore.single("test"),
   async (req: Request, res: Response) => {
-    const user = await User.findOne({ username: "mcuve" });
-    if (!user) return res.status(400).json({ message: "user not found" });
-    wsServer.socket.to(user.roomId).emit("file", req.file.buffer);
-    res.status(200).json({ message: "Sheared" });
+    console.log(req);
+    const filename = req.file.path.split("/").pop() as string;
+    sendFile(req, filename);
+    removeFile(filename, 60000 * 60);
+    return res.status(200);
   }
 );
+
+const sendFile = (req: Request, filename: string) => {
+  wsServer.socket.to(req.room).emit(FileEvents.file, {
+    filename,
+    originalName: req.file.originalname,
+    buffer: req.file.buffer,
+  });
+  console.log(req.query);
+  const socketId = req.body.socketId || req.params.socketId;
+  sendNotifications(
+    {
+      title: `New File available: ${req.file.originalname}`,
+      body: "Someone sends you a file",
+      data: { type: "file" },
+    },
+    req.user!.devices,
+    socketId
+  );
+};

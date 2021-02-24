@@ -7,6 +7,9 @@ export enum Actions {
   CONNECT_CLIENT = "CONNECT_CLIENT",
   SET_AUTH = "SET_AUTH",
   SET_USER = "SET_USER",
+  SET_FILE = "SET_FILE",
+  SAVE_FILE = "SAVE_FILE",
+  RESET_FILE = "RESET_FILE",
 }
 
 export interface Action {

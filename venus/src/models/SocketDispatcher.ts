@@ -1,10 +1,11 @@
-import download from "downloadjs";
 import { Action } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { Socket } from "socket.io-client";
 import { Actions } from "../lib/actions";
 import { Device } from "../lib/device";
 import { RootStore } from "../store";
+import * as fileActions from "../store/actions/FileActions";
+
 export class SocketDispatcher {
   constructor(
     private socket: Socket,
@@ -31,16 +32,15 @@ export class SocketDispatcher {
       });
     });
 
-    // this.socket.on("disconnect", async () => {
-    //   this.socket.emit("leave");
-    // });
-
-    this.socket.on("file", (file: Buffer) => {
-      console.log(file);
-      // if (_web_) {
-      const byteArray = new Uint8Array(file);
-      download(byteArray, "image.jpg", "image/jpg");
-      // }
-    });
+    this.socket.on(
+      "file",
+      async (file: {
+        buffer?: Buffer;
+        filename: string;
+        originalName: string;
+      }) => {
+        this.dispatch(fileActions.setFile(file));
+      }
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { wsServer } from "..";
 import { DeviceAttrs } from "../models/Device";
-import User from "../models/User";
+import { User } from "../models/User";
 
 export const joinRoomHandler = async (
   { prevId, ...device }: DeviceAttrs & { prevId: string },
@@ -12,14 +12,18 @@ export const joinRoomHandler = async (
   if (!user) return;
 
   user.devices = user.devices.filter((d) => d.socketId !== prevId);
-
+  device.pushToken = wsServer.socket.handshake.auth.token;
   user.devices.push({
     socketId: wsServer.socket.id,
     device,
   });
   await user.save();
 
-  const devices = user.devices.map((d) => ({ id: d.socketId, ...d.device }));
+  const devices = user.devices.map((d) => ({
+    id: d.socketId,
+    ...d.device,
+    pushToken: null,
+  }));
 
   wsServer.socket.join(user.roomId);
   wsServer.socket.to(user.roomId).emit("set-devices", devices);

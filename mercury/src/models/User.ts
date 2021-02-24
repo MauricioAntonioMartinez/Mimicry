@@ -7,7 +7,7 @@ interface UserAttrs {
   roomId: string;
 }
 
-interface UserDoc extends mongoose.Document {
+export interface UserDoc extends mongoose.Document {
   name: string;
   username: string;
   roomId: string;
@@ -51,6 +51,7 @@ const UserSchema = new mongoose.Schema<UserDoc>({
           type: String,
           required: true,
         },
+        pushToken: String,
       },
     },
   ],
@@ -60,6 +61,4 @@ UserSchema.static("build", (attrs: UserAttrs) => {
   return new User(attrs);
 });
 
-const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);
-
-export default User;
+export const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);

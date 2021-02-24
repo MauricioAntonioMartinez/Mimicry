@@ -3,8 +3,9 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import { connectDatabase } from "./db/connectToDatabase";
-import { currentUser } from "./middlewares/currentUser";
-import User from "./models/User";
+import { checkJwt } from "./middlewares/currentUser";
+import { errorHandler } from "./middlewares/errorHanlder";
+import { User } from "./models/User";
 import { fileRouter } from "./routers/file";
 import { userRouter } from "./routers/user";
 import { WebSocketServer } from "./Ws";
@@ -16,20 +17,22 @@ async function main() {
   await connectDatabase();
   const app = express();
   app.use(cors());
-
   const server = http.createServer(app);
-
   const ws = new Server(server, {
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
     },
   });
-  app.use(express.json());
 
+  app.use(express.json());
+  app.use(express.static(__dirname + "/public"));
+  app.use(checkJwt);
+  // ws.use(currentUser);
   app.use(userRouter);
   app.use(fileRouter);
-  ws.use(currentUser);
+
+  app.use(errorHandler);
 
   wsServer = new WebSocketServer(ws);
 

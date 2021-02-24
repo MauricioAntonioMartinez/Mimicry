@@ -5,6 +5,7 @@ export interface DeviceAttrs {
   type: "ios" | "android" | "windows" | "macos" | "web";
   os: string;
   version: string;
+  pushToken: string;
 }
 
 export interface DeviceDoc extends mongoose.Document {

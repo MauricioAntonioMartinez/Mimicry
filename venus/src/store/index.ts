@@ -16,4 +16,11 @@ export interface RootStore {
     refreshToken?: string;
     user: { username: string; picture: string };
   };
+  file: {
+    filename?: string;
+    serverFilename?: string;
+    buffer?: Buffer;
+    url?: string;
+    shouldPickName: boolean;
+  };
 }

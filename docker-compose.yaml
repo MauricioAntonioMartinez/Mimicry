@@ -23,7 +23,7 @@ services:
     env_file:
       - ./env/mongo.env
     volumes:
-      - mercury-data:/data/eb
+      - mercury-data:/data/db
     ports:
       - "8888:27017"
 

@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../../constant/color";
 
 interface Props {}
@@ -10,7 +9,7 @@ export const ClipBoard = (props: Props) => {
     <View style={styles.clipBoardContainer}>
       <Text style={styles.title}>Send to ClipBoard</Text>
       <View style={styles.actions}>
-        <TextInput style={styles.input} />
+        <TextInput placeholder="https://www...." style={styles.input} />
         <View style={styles.button}>
           <Button color={colors.primary} onPress={() => {}} title="Send" />
         </View>
