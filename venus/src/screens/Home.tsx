@@ -1,6 +1,6 @@
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import { Controls } from "../components/controls/Controls";
+import FileView from "../components/File/FileView";
 import { PickNameModal } from "../components/modals/PickName.native";
 import SideBar from "../components/ui/SideBar";
 import { _web_ } from "../constant/platform";
@@ -10,7 +10,8 @@ export const Home = () => {
     <View style={styles.screen}>
       {_web_ ? <SideBar /> : <PickNameModal />}
       <View style={styles.main}>
-        <Controls />
+        <FileView />
+        {/* <Controls /> */}
         {/* <Auth /> */}
       </View>
     </View>

@@ -1,11 +1,14 @@
 import React, { PropsWithChildren } from "react";
-import { Platform, StyleSheet, View, ViewStyle } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
+import { _android_ } from "../../constant/platform";
 
-export const Card: React.FC<PropsWithChildren<{ style?: ViewStyle }>> = ({
-  children,
-  style,
-}) => {
-  return <View style={{ ...styles.container, ...style }}>{children}</View>;
+export const Card: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+  let TouchableCmp: any = TouchableOpacity;
+  if (_android_ && Platform.Version > 21) {
+    TouchableCmp = TouchableOpacity;
+  }
+
+  return <TouchableCmp style={styles.container}>{children}</TouchableCmp>;
 };
 
 const styles = StyleSheet.create({
@@ -14,7 +17,7 @@ const styles = StyleSheet.create({
 
     ...Platform.select({
       android: {
-        elevation: 1,
+        elevation: 5,
       },
       ios: {
         shadowColor: "#000",
@@ -26,8 +29,9 @@ const styles = StyleSheet.create({
         shadowRadius: 6.27,
       },
       web: {
-        borderRightWidth: 1,
-        backgroundColor: "red",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px;",
       },
     }),
   },

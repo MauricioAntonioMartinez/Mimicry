@@ -17,6 +17,7 @@ const DeviceItem = ({ device }: Props) => {
 
   const isWeb = device.type === "web";
 
+  console.log(device);
   return (
     <TouchableCmp style={styles.item}>
       <View style={styles.main}>
@@ -29,14 +30,14 @@ const DeviceItem = ({ device }: Props) => {
           </Text>
         </Text>
       </View>
-      {device.type !== "web" && (
+      {/* {device.type !== "web" && (
         <View style={styles.osContainer}>
           <Text style={styles.os}>
             {device.os}
             <Text style={styles.version}>{device.version}</Text>
           </Text>
         </View>
-      )}
+      )} */}
     </TouchableCmp>
   );
 };
@@ -45,6 +46,7 @@ export default DeviceItem;
 const styles = StyleSheet.create({
   main: {
     justifyContent: "space-between",
+    width: "100%",
   },
   active: {
     width: 12,
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
   },
   os: {
     fontSize: 18,
-    color: colors.warning,
+    color: colors.secondary,
     fontWeight: "bold",
   },
   version: {
@@ -78,10 +80,8 @@ const styles = StyleSheet.create({
   item: {
     padding: 10,
     flex: 1,
-
     justifyContent: "space-between",
-    textAlignVertical: "center",
-    flexDirection: "row",
+    // textAlignVertical: "center",
     borderColor: "black",
     ...Platform.select({
       native: {
