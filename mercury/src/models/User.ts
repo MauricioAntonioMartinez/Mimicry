@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-import { DeviceAttrs } from "./Device";
+import { wsServer } from "..";
+import { Device, DeviceAttrs } from "./Device";
+import { File } from "./File";
 
 interface UserAttrs {
   name: string;
@@ -12,6 +14,9 @@ export interface UserDoc extends mongoose.Document {
   username: string;
   roomId: string;
   devices: { socketId: string; device: DeviceAttrs }[];
+  files: File[];
+  filterDevices(props: DeviceAttrs & { prevId: string }): Device[];
+  filterFiles(): void;
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -35,8 +40,6 @@ const UserSchema = new mongoose.Schema<UserDoc>({
     {
       socketId: String,
       device: {
-        // type: mongoose.Types.ObjectId,
-        // ref: "Device",
         name: { type: String, required: false },
         type: {
           type: String,
@@ -55,7 +58,44 @@ const UserSchema = new mongoose.Schema<UserDoc>({
       },
     },
   ],
+  files: [
+    {
+      filename: String,
+      id: String,
+      name: String,
+      size: Number,
+      type: String,
+      expiration: Date,
+    },
+  ],
 });
+
+UserSchema.methods.filterDevices = function ({
+  prevId,
+  ...device
+}: DeviceAttrs & { prevId: string }) {
+  this.devices = this.devices.filter((d) => d.socketId !== prevId);
+  device.pushToken = wsServer.socket.handshake.auth.token;
+  this.devices.push({
+    socketId: wsServer.socket.id,
+    device,
+  });
+
+  const devices = this.devices.map((d) => {
+    Reflect.deleteProperty(d, "pushToken");
+    return {
+      id: d.socketId,
+      ...d.device,
+    };
+  });
+  return devices;
+};
+
+UserSchema.methods.filterFiles = function () {
+  const filteredFiles = this.files.filter((d) => d.expiration > new Date());
+  this.files = filteredFiles;
+  return this.files;
+};
 
 UserSchema.static("build", (attrs: UserAttrs) => {
   return new User(attrs);

@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
 
+export interface Device {
+  name?: string | undefined;
+  type: "ios" | "android" | "windows" | "macos" | "web";
+  os: string;
+  version: string;
+  pushToken: string;
+  id: string;
+}
+
 export interface DeviceAttrs {
   name?: string;
   type: "ios" | "android" | "windows" | "macos" | "web";
@@ -12,8 +21,8 @@ export interface DeviceDoc extends mongoose.Document {
   name?: string;
   host?: string;
   type: "ios" | "android" | "windows" | "macos" | "web";
-  osName: string;
-  osVersion: string;
+  os: string;
+  version: string;
   owner: string;
 }
 

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import { Device } from "../lib/device";
+import { File } from "../models/File";
 
 export interface RootStore {
   socket: {
@@ -17,10 +18,14 @@ export interface RootStore {
     user: { username: string; picture: string };
   };
   file: {
-    filename?: string;
-    serverFilename?: string;
+    id: string;
+    filename: string;
+    type: string;
+    serverFilename: string;
     buffer?: Buffer;
-    url?: string;
+    url: string;
+    size: number;
     shouldPickName: boolean;
+    files: File[];
   };
 }

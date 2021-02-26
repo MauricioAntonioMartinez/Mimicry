@@ -29,19 +29,19 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    padding: 20,
   },
   title: {
     fontSize: 32,
     color: colors.warning,
   },
   titleContainer: {
-    height: 50,
+    padding: 20,
+    height: 70,
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
   controls: {
-    padding: 10,
+    padding: 20,
     width: "100%",
     height: 60,
   },

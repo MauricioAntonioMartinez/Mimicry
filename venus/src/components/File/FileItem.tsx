@@ -1,20 +1,28 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constant/color";
+import { Preview } from "../../constant/previews";
+import { File } from "../../models/File";
 import { Card } from "../ui/Card";
 
 interface Props {
-  name: string;
-  size: number;
+  file: File;
 }
 
-export const FileItem = (props: Props) => {
+export const FileItem = ({ file }: Props) => {
   return (
     <Card>
       <View style={styles.container}>
-        <View style={styles.image}></View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.image}
+            source={{
+              uri: Preview.unknown,
+            }}
+          />
+        </View>
         <View style={styles.content}>
-          <Text style={styles.fileName}>{props.name}</Text>
+          <Text style={styles.fileName}>{file.name}</Text>
         </View>
       </View>
     </Card>
@@ -38,8 +46,13 @@ const styles = StyleSheet.create({
     width: 300,
     height: 250,
   },
-  image: {
+  imageContainer: {
     height: "70%",
+    width: "100%",
+  },
+  image: {
+    flex: 1,
+    backgroundColor: colors.secondary,
   },
   content: {
     borderTopWidth: 1,
@@ -48,7 +61,7 @@ const styles = StyleSheet.create({
     height: "30%",
   },
   fileName: {
-    fontSize: 28,
+    fontSize: 22,
     color: colors.primary,
   },
 });

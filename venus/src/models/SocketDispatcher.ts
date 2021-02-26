@@ -38,6 +38,8 @@ export class SocketDispatcher {
         buffer?: Buffer;
         filename: string;
         originalName: string;
+        size: number;
+        id: string;
       }) => {
         this.dispatch(fileActions.setFile(file));
       }

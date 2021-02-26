@@ -3,7 +3,7 @@ import { DeviceAttrs } from "../models/Device";
 import { User } from "../models/User";
 
 export const joinRoomHandler = async (
-  { prevId, ...device }: DeviceAttrs & { prevId: string },
+  props: DeviceAttrs & { prevId: string },
   cb: any
 ) => {
   const username = wsServer.socket.handshake.auth.username;
@@ -11,19 +11,9 @@ export const joinRoomHandler = async (
   const user = await User.findOne({ username });
   if (!user) return;
 
-  user.devices = user.devices.filter((d) => d.socketId !== prevId);
-  device.pushToken = wsServer.socket.handshake.auth.token;
-  user.devices.push({
-    socketId: wsServer.socket.id,
-    device,
-  });
+  user.filterFiles();
+  const devices = user.filterDevices(props);
   await user.save();
-
-  const devices = user.devices.map((d) => ({
-    id: d.socketId,
-    ...d.device,
-    pushToken: null,
-  }));
 
   wsServer.socket.join(user.roomId);
   wsServer.socket.to(user.roomId).emit("set-devices", devices);
@@ -34,6 +24,7 @@ export const joinRoomHandler = async (
 export const leaveRoomHandler = async (id: string) => {
   console.log(`Device leave with id :${wsServer.socket.id} prev: ${id}`);
   const username = wsServer.socket.handshake.auth.username;
+  console.log(wsServer.socket);
   if (!username) return;
   const user = await User.findOne({ username });
   if (!user) return;

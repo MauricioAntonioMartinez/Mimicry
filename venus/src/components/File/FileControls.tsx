@@ -1,11 +1,18 @@
 import React from "react";
 import { StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
 import { colors } from "../../constant/color";
+import * as fileActions from "../../store/actions/FileActions";
 import { Button } from "../ui/Button";
 
 export const FileControls = () => {
+  const dispatch = useDispatch();
   return (
-    <Button color={colors.secondary} title="Send File" onPress={() => {}} />
+    <Button
+      color={colors.secondary}
+      title="Send File"
+      onPress={() => dispatch(fileActions.sendFile())}
+    />
   );
 };
 

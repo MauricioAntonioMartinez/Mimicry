@@ -13,8 +13,6 @@ export const Card: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-
     ...Platform.select({
       android: {
         elevation: 5,

@@ -8,6 +8,7 @@ import { _web_ } from "../../constant/platform";
 import { downloadFile } from "../../healpers/downloadFile";
 import { Actions } from "../../lib/actions";
 import { AppThunk } from "../../lib/reduxTypes";
+import { File } from "../../models/File";
 
 export const sendFile = (): AppThunk<Promise<any>> => {
   return async (_, getStore) => {
@@ -39,7 +40,25 @@ export const sendFile = (): AppThunk<Promise<any>> => {
           "content-type": "multipart/form-data",
         },
       };
-      await axios.post(url + `?socketId=${socketId}`, formData, config);
+      const res = await axios.post(
+        url + `?socketId=${socketId}`,
+        formData,
+        config
+      );
+      // const newFile = new File({
+      //   id: file.id,
+      //   filename: file.filename as string,
+      //   name: file.filename,
+      //   size: file.size,
+      //   type: file.type,
+      // });
+      // TODO: the sender should also set the file.
+      // dispatch({
+      //   type: Actions.ADD_FILE,
+      //   payload: {
+      //     file: newFile,
+      //   },
+      // });
     } catch (error) {
       Alert.alert("Something went wrong", "Couldn't send the file");
       console.log(error.message);
@@ -51,22 +70,32 @@ export const setFile = ({
   filename,
   buffer,
   originalName,
+  size,
+  id,
+  type,
 }: {
   buffer?: Buffer;
   filename: string;
   originalName: string;
+  size: number;
+  type: string;
+  id: string;
 }): AppThunk<Promise<any>> => {
   return async (dispatch) => {
     if (_web_ && buffer) {
       const byteArray = new Uint8Array(buffer);
       return download(byteArray, originalName);
     }
+    console.log(filename);
     return dispatch({
       type: Actions.SET_FILE,
       payload: {
         url: `${API}/${filename}`,
         filename: originalName,
         serverFileName: filename,
+        size,
+        id,
+        type,
       },
     });
   };
@@ -80,9 +109,21 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
         store.file.url as string,
         FileSystem.documentDirectory + name
       );
+      const file = store.file;
+      const newFile = new File({
+        id: file.id,
+        filename: file.filename as string,
+        name: file.filename,
+        size: file.size,
+        type: file.type,
+      });
       await downloadFile(uri);
-      //   store.socket.socket?.emit("downloaded", store.file.serverFilename);
-      // TODO:  we could emit to delete but other connected users wouldn't download it.
+      dispatch({
+        type: Actions.ADD_FILE,
+        payload: {
+          file: newFile,
+        },
+      });
       dispatch({ type: Actions.RESET_FILE });
     } catch (e) {
       Alert.alert("Something went wrong", "Couldn't download the file", [
@@ -96,6 +137,8 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
     }
   };
 };
+//   store.socket.socket?.emit("downloaded", store.file.serverFilename);
+// TODO:  we could emit to delete but other connected users wouldn't download it.
 
 export const resetFile = () => ({
   type: Actions.RESET_FILE,
