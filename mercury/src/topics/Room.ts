@@ -11,13 +11,5 @@ export default class Room {
 
     socket.on(Room.events.join, joinRoomHandler);
     socket.on(Room.events.leave, leaveRoomHandler);
-
-    socket.on("send", ({ room, data }: { room: string; data: any }) => {
-      socket.to(room).emit("data", data);
-    });
-
-    socket.on("color", ({ room, color }: { room: string; color: string }) => {
-      socket.to(room).emit("changeColor", color);
-    });
   }
 }

@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { wsServer } from "..";
-import { Device, DeviceAttrs } from "./Device";
-import { File } from "./File";
+import { Expiration } from "../../constants/expiration";
+import { Device, DeviceAttrs } from "../Device";
+import { File } from "../File";
 
-interface UserAttrs {
+export interface UserAttrs {
   name: string;
   username: string;
   roomId: string;
@@ -13,17 +13,24 @@ export interface UserDoc extends mongoose.Document {
   name: string;
   username: string;
   roomId: string;
+  expirationType: Expiration;
   devices: { socketId: string; device: DeviceAttrs }[];
   files: File[];
   filterDevices(props: DeviceAttrs & { prevId: string }): Device[];
+  removeFile(id: string): void;
   filterFiles(): void;
+  addFile(file: {
+    mimetype: string;
+    size: number;
+    filename: string;
+  }): { expiration: Date; id: string };
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
   build(attrs: UserAttrs): UserDoc;
 }
 
-const UserSchema = new mongoose.Schema<UserDoc>({
+export const UserSchema = new mongoose.Schema<UserDoc>({
   name: {
     type: String,
     required: true,
@@ -35,6 +42,10 @@ const UserSchema = new mongoose.Schema<UserDoc>({
   roomId: {
     type: String,
     required: true,
+  },
+  expirationType: {
+    type: Number,
+    default: Expiration.standard,
   },
   devices: [
     {
@@ -60,45 +71,31 @@ const UserSchema = new mongoose.Schema<UserDoc>({
   ],
   files: [
     {
-      filename: String,
-      id: String,
-      name: String,
-      size: Number,
-      type: String,
-      expiration: Date,
+      filename: {
+        type: String,
+        required: true,
+      },
+      id: {
+        type: String,
+        required: true,
+      },
+      size: {
+        type: Number,
+        required: true,
+      },
+      type: {
+        type: String,
+        required: true,
+      },
+      expiration: {
+        type: Date,
+        required: true,
+      },
     },
   ],
 });
 
-UserSchema.methods.filterDevices = function ({
-  prevId,
-  ...device
-}: DeviceAttrs & { prevId: string }) {
-  this.devices = this.devices.filter((d) => d.socketId !== prevId);
-  device.pushToken = wsServer.socket.handshake.auth.token;
-  this.devices.push({
-    socketId: wsServer.socket.id,
-    device,
-  });
-
-  const devices = this.devices.map((d) => {
-    Reflect.deleteProperty(d, "pushToken");
-    return {
-      id: d.socketId,
-      ...d.device,
-    };
-  });
-  return devices;
-};
-
-UserSchema.methods.filterFiles = function () {
-  const filteredFiles = this.files.filter((d) => d.expiration > new Date());
-  this.files = filteredFiles;
-  return this.files;
-};
-
-UserSchema.static("build", (attrs: UserAttrs) => {
-  return new User(attrs);
-});
+require("./methods");
+require("./static");
 
 export const User = mongoose.model<UserDoc, UserModel>("User", UserSchema);

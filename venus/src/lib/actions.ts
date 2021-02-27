@@ -10,6 +10,7 @@ export enum Actions {
   SET_FILE = "SET_FILE",
   ADD_FILE = "ADD_FILE",
   SAVE_FILE = "SAVE_FILE",
+  REMOVE_FILE = "REMOVE_FILE",
   RESET_FILE = "RESET_FILE",
 }
 

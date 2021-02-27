@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
-import { User, UserDoc } from "../models/User";
+import { User, UserDoc } from "../models/user/User";
 
 declare global {
   namespace Express {

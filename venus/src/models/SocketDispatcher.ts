@@ -39,10 +39,22 @@ export class SocketDispatcher {
         filename: string;
         originalName: string;
         size: number;
+        type: string;
+        expiration: Date;
         id: string;
       }) => {
         this.dispatch(fileActions.setFile(file));
       }
     );
+
+    this.socket.on("remove-file", (id: string) => {
+      console.log("REMOVE FILE");
+      this.dispatch({
+        type: Actions.REMOVE_FILE,
+        payload: {
+          id,
+        },
+      });
+    });
   }
 }

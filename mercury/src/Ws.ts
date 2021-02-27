@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { File } from "./topics/File";
+import { FileTopic } from "./topics/File";
 import Room from "./topics/Room";
 
 export class WebSocketServer {
@@ -23,7 +23,7 @@ export class WebSocketServer {
       console.log(`Push Token: ${socket.handshake.auth.token}`);
       this._socket = socket;
       Room.listen();
-      File.listen();
+      FileTopic.listen();
       socket.on("disconnect", this.onDisconnect.bind(this));
     });
   }

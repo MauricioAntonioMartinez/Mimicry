@@ -5,3 +5,13 @@ export interface File {
   size: number;
   expiration: Date;
 }
+
+export interface SendFile {
+  filename: string;
+  originalName: string;
+  buffer: Buffer;
+  type: string;
+  size: number;
+  expiration: Date;
+  id: string;
+}
