@@ -1,4 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import * as DeviceInfo from "expo-device";
+import { Platform } from "react-native";
+import { API } from "../../constant/api";
+import { getToken } from "../../healpers/getToken";
 import { Actions } from "../../lib/actions";
 import { AppThunk } from "../../lib/reduxTypes";
 
@@ -17,23 +22,40 @@ export const setUser = (): AppThunk<Promise<any>> => {
   return async (dispatch, getStore) => {
     const store = getStore();
     try {
-      const res = await axios.post(
-        "http://192.168.1.19:4000/users/login",
-        {
-          username: "mcuve",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${store.auth?.token}`,
-          },
-        }
-      );
-      return dispatch({
+      const prevId = await AsyncStorage.getItem("id");
+      const token = await getToken();
+      const { data } = await axios.post(`${API}/users/login`, {
+        username: "mcuve",
+        prevId,
+        name: DeviceInfo.deviceName,
+        os: DeviceInfo.osName,
+        version: DeviceInfo.osVersion,
+        type: Platform.OS,
+        pushToken: token,
+      });
+
+      dispatch({
         type: Actions.SET_USER,
         payload: {
-          user: res.data.user,
+          user: data.user,
         },
       });
+
+      dispatch({
+        type: Actions.SET_DEVICES,
+        payload: {
+          devices: data.devices,
+        },
+      });
+
+      dispatch({
+        type: Actions.SET_FILES,
+        payload: {
+          devices: data.files,
+        },
+      });
+
+      await AsyncStorage.setItem("id", data.id);
     } catch (e) {
       console.log(e.message);
       throw new Error("Cannot find a user with that token sorry fella.");

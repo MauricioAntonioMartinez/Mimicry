@@ -7,10 +7,11 @@ UserSchema.methods.filterDevices = function ({
   prevId,
   ...device
 }: DeviceAttrs & { prevId: string }) {
+  const newId = uuidv4();
   this.devices = this.devices.filter((d) => d.socketId !== prevId);
   device.pushToken = wsServer.socket.handshake.auth.token;
   this.devices.push({
-    socketId: wsServer.socket.id,
+    socketId: newId,
     device,
   });
 
@@ -21,7 +22,7 @@ UserSchema.methods.filterDevices = function ({
       ...d.device,
     };
   });
-  return devices;
+  return { devices, id: newId };
 };
 
 UserSchema.methods.filterFiles = function () {

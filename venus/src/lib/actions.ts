@@ -8,6 +8,7 @@ export enum Actions {
   SET_AUTH = "SET_AUTH",
   SET_USER = "SET_USER",
   SET_FILE = "SET_FILE",
+  SET_FILES = "SET_FILES",
   ADD_FILE = "ADD_FILE",
   SAVE_FILE = "SAVE_FILE",
   REMOVE_FILE = "REMOVE_FILE",

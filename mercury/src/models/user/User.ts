@@ -16,7 +16,9 @@ export interface UserDoc extends mongoose.Document {
   expirationType: Expiration;
   devices: { socketId: string; device: DeviceAttrs }[];
   files: File[];
-  filterDevices(props: DeviceAttrs & { prevId: string }): Device[];
+  filterDevices(
+    props: DeviceAttrs & { prevId: string }
+  ): { devices: Device[]; id: string };
   removeFile(id: string): void;
   filterFiles(): void;
   addFile(file: {

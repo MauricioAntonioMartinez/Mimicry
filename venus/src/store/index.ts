@@ -25,6 +25,7 @@ export interface RootStore {
     buffer?: Buffer;
     url: string;
     size: number;
+    expiration: Date;
     shouldPickName: boolean;
     files: File[];
   };

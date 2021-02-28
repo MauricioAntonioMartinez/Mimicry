@@ -8,7 +8,7 @@ import { _web_ } from "../../constant/platform";
 import { downloadFile } from "../../healpers/downloadFile";
 import { Actions } from "../../lib/actions";
 import { AppThunk } from "../../lib/reduxTypes";
-import { File } from "../../models/File";
+import { File, ReceivedFile } from "../../models/File";
 
 export const sendFile = (): AppThunk<Promise<any>> => {
   return async (dispatch, getStore) => {
@@ -23,32 +23,35 @@ export const sendFile = (): AppThunk<Promise<any>> => {
 
     try {
       const url = `${API}/upload-multipart`;
-      const newFile = new File({
+      let newFile = new File({
         id: file.id,
         filename: file.filename,
         name: file.filename,
         size: file.size,
         type: file.type,
+        expiration: file.expiration,
       });
-      if (!_web_)
-        await FileSystem.uploadAsync(url, data.uri, {
+      if (!_web_) {
+        const res = await FileSystem.uploadAsync(url, data.uri, {
           uploadType: FileSystem.FileSystemUploadType.MULTIPART,
           fieldName: "test",
           parameters: {
             socketId,
           },
         });
-      else {
+        console.log(res.body);
+      } else {
         if (!data.file) return;
         const formData = new FormData();
         formData.append("test", data.file, data.name);
 
-        await axios.post(url + `?socketId=${socketId}`, formData, {
+        const res = await axios.post(url + `?socketId=${socketId}`, formData, {
           headers: {
             "content-type": "multipart/form-data",
           },
         });
-        console.log("THIS TRIGGERS");
+
+        newFile = res.data;
       }
 
       dispatch({
@@ -71,26 +74,27 @@ export const setFile = ({
   size,
   id,
   type,
-}: {
-  buffer?: Buffer;
-  filename: string;
-  originalName: string;
-  size: number;
-  type: string;
-  id: string;
-}): AppThunk<Promise<any>> => {
+  expiration,
+}: ReceivedFile): AppThunk<Promise<any>> => {
   return async (dispatch) => {
     if (_web_ && buffer) {
       const byteArray = new Uint8Array(buffer);
+      const didSave = download(byteArray, originalName);
+      if (!didSave) return;
       dispatch({
         type: Actions.ADD_FILE,
         payload: {
-          file: new File({ type, filename, id, name: originalName, size }),
+          file: new File({
+            type,
+            filename,
+            id,
+            name: originalName,
+            size,
+            expiration,
+          }),
         },
       });
-      return download(byteArray, originalName);
     }
-    console.log(filename);
     return dispatch({
       type: Actions.SET_FILE,
       payload: {
@@ -100,6 +104,7 @@ export const setFile = ({
         size,
         id,
         type,
+        expiration,
       },
     });
   };
@@ -121,6 +126,7 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
         name: file.filename,
         size: file.size,
         type: file.type,
+        expiration: file.expiration,
       });
       dispatch({ type: Actions.RESET_FILE });
       dispatch({

@@ -10,6 +10,7 @@ const initialState: RootStore["file"] = {
   url: "",
   shouldPickName: false,
   files: [],
+  expiration: new Date(),
 };
 
 export const fileReducer = (
@@ -26,6 +27,7 @@ export const fileReducer = (
         shouldPickName: true,
         size: action.payload.size,
         id: action.payload.id,
+        expiration: action.payload.expiration,
       };
     case Actions.ADD_FILE:
       return {
