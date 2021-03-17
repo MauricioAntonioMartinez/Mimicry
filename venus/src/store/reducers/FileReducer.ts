@@ -34,8 +34,13 @@ export const fileReducer = (
         ...state,
         files: state.files.concat(action.payload.file),
       };
+    case Actions.SYNC:
+      return {
+        ...state,
+        files: action.payload.files,
+      };
     case Actions.RESET_FILE:
-      return initialState;
+      return { ...initialState, files: state.files };
     default:
       return state;
   }

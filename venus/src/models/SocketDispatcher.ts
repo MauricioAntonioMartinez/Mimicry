@@ -13,6 +13,7 @@ export class SocketDispatcher {
     private dispatch: ThunkDispatch<RootStore, unknown, Action<string>>
   ) {
     this.socket = socket;
+    socket.emit("join");
   }
   listen() {
     this.socket.on("connect-client", (device: Device) =>
@@ -24,27 +25,34 @@ export class SocketDispatcher {
       })
     );
 
-    this.socket.on("set-devices", (devices: Device[]) => {
+    this.socket.on("set-devices", (payload: { devices: Device[] }) => {
       this.dispatch({
         type: Actions.SET_DEVICES,
-        payload: {
-          devices,
-        },
+        payload,
       });
     });
 
-    this.socket.on("set-files", (devices: Device[]) => {
+    this.socket.on("device-leave", (id: string) => {
+      console.log("User leave", id);
       this.dispatch({
-        type: Actions.SET_DEVICES,
-        payload: {
-          devices,
-        },
+        type: Actions.DEVICE_LEAVE,
+        payload: { id },
       });
     });
 
-    this.socket.on("file", async (file: ReceivedFile) =>
-      this.dispatch(fileActions.setFile(file))
-    );
+    // this.socket.on("set-files", (devices: Device[]) => {
+    //   this.dispatch({
+    //     type: Actions.SET_FILES,
+    //     payload: {
+    //       devices,
+    //     },
+    //   });
+    // });
+
+    this.socket.on("file", async (file: ReceivedFile) => {
+      console.log("FILE RECEIVED");
+      this.dispatch(fileActions.setFile(file));
+    });
 
     this.socket.on("remove-file", (id: string) =>
       this.dispatch({

@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { checkUser } from "./handlers/roomHandler";
 import { FileTopic } from "./topics/File";
 import Room from "./topics/Room";
 
@@ -20,7 +21,6 @@ export class WebSocketServer {
 
   private initialize() {
     this.server.on(this.events.connect, (socket) => {
-      console.log(`Push Token: ${socket.handshake.auth.token}`);
       this._socket = socket;
       Room.listen();
       FileTopic.listen();
@@ -29,6 +29,9 @@ export class WebSocketServer {
   }
 
   private async onDisconnect() {
-    // await leaveRoomHandler();
+    const user = await checkUser();
+    if (!user) return;
+    const id = this._socket?.handshake.auth.hostId;
+    this.server.to(user.roomId).emit("device-leave", id);
   }
 }

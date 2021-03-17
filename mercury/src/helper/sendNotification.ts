@@ -4,14 +4,14 @@ import { DeviceAttrs } from "../models/Device";
 
 export const sendNotifications = async (
   { body, title, data }: { title: string; body: string; data?: any },
-  devices: { socketId: string; device: DeviceAttrs }[],
-  socketId?: string
+  devices: DeviceAttrs [],
+  id?: string
 ) => {
   const notifications = devices.reduce<ExpoPushMessage[]>(
-    (messages, { device, socketId: sktId }) => {
-      if (Expo.isExpoPushToken(device.pushToken) && socketId !== sktId)
+    (messages, { id:deviceId,pushToken }) => {
+      if (Expo.isExpoPushToken(pushToken) && id !== deviceId)
         messages.push({
-          to: device.pushToken,
+          to: pushToken,
           body,
           title,
           data,

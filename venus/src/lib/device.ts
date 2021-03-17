@@ -1,5 +1,5 @@
 export interface Device {
-  id?: string;
+  id: string;
   name: string | null;
   type: "ios" | "android" | "windows" | "macos" | "web";
   os: string;

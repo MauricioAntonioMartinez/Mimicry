@@ -8,6 +8,7 @@ import { _ios_, _web_ } from "../constant/platform";
 import { Screens, VenusStackParamList } from "../lib/navigationTypes";
 import { Home } from "../screens/Home";
 import { RootStore } from "../store";
+import * as authActions from "../store/actions/AuthActions";
 import * as socketActions from "../store/actions/SocketActions";
 
 const VenusNavigationStack = createStackNavigator<VenusStackParamList>();
@@ -15,7 +16,6 @@ const VenusNavigationStack = createStackNavigator<VenusStackParamList>();
 export const VenusStack = () => {
   const isConnected = useSelector((store: RootStore) => store.socket.connected);
   const dispatch = useDispatch();
-  console.log(isConnected);
 
   return (
     <VenusNavigationStack.Navigator
@@ -53,7 +53,9 @@ export const VenusStack = () => {
                 <Item
                   title="Sync Devices"
                   iconName={"sync-circle"}
-                  onPress={() => {}}
+                  onPress={() => {
+                    if (isConnected) dispatch(authActions.syncApp());
+                  }}
                 />
               )}
               <Item

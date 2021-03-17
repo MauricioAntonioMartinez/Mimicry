@@ -1,5 +1,6 @@
 export enum Actions {
   SET_SOCKET = "SET_SOCKET",
+  SET_HOST = "SET_HOST",
   CONNECTED = "CONNECTED",
   DISCONNECT = "DISCONNECT",
   SET_DEVICES = "SET_DEVICES",
@@ -9,10 +10,12 @@ export enum Actions {
   SET_USER = "SET_USER",
   SET_FILE = "SET_FILE",
   SET_FILES = "SET_FILES",
+  DEVICE_LEAVE = "DEVICE_LEAVE",
   ADD_FILE = "ADD_FILE",
   SAVE_FILE = "SAVE_FILE",
   REMOVE_FILE = "REMOVE_FILE",
   RESET_FILE = "RESET_FILE",
+  SYNC = "SYNC",
 }
 
 export interface Action {

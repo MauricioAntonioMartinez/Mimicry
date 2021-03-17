@@ -10,6 +10,7 @@ export interface Device {
 }
 
 export interface DeviceAttrs {
+  id:string;
   name?: string;
   type: "ios" | "android" | "windows" | "macos" | "web";
   os: string;

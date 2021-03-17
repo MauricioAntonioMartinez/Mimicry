@@ -55,6 +55,7 @@ export interface ReceivedFile {
   originalName: string;
   size: number;
   type: string;
+  hostId: string;
   id: string;
   expiration: Date;
 }

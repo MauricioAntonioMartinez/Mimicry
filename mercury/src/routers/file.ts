@@ -12,7 +12,6 @@ const storageImage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const extension = file.originalname.split(".").pop();
-
     cb(null, `${req.user!.id + "||" + Date.now()}.${extension}`);
   },
 });
@@ -26,12 +25,13 @@ fileRouter.post(
   uploadStore.single("test"),
   async (req: Request, res: Response) => {
     const filename = req.file.path.split("/").pop() as string;
-
     const file = req.user!.addFile({
       mimetype: req.file.mimetype,
       size: req.file.size,
       filename,
+      name: req.file.originalname,
     });
+
     await req.user!.save();
     removeFile({
       filename,
@@ -39,13 +39,14 @@ fileRouter.post(
       userId: req.user?.id,
       fileId: file!.id,
     });
-    const socketId = req.body.socketId || req.params.socketId;
+    const hostId = (req.body.hostId || req.query.hostId) as string;
+
     const devices = req.user!.devices;
     wsServer.socket.to(req.room).emit(FileEvents.file, {
-      buffer: req.file.buffer,
-      expiration: file.expiration,
       id: file.id,
       filename: req.file.filename,
+      expiration: file.expiration,
+      hostId,
       originalName: req.file.originalname,
       size: req.file.size,
       type: req.file.mimetype,
@@ -57,9 +58,14 @@ fileRouter.post(
         data: { type: "file" },
       },
       devices,
-      socketId
+      hostId
     );
-    return res.status(200).json({ success: true });
+    return res.status(200).json({
+      success: true,
+      id: file.id,
+      filename: req.file.filename,
+      name: req.file.originalname,
+    });
   }
 );
 

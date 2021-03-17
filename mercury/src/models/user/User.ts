@@ -14,17 +14,16 @@ export interface UserDoc extends mongoose.Document {
   username: string;
   roomId: string;
   expirationType: Expiration;
-  devices: { socketId: string; device: DeviceAttrs }[];
+  devices: DeviceAttrs[];
   files: File[];
-  filterDevices(
-    props: DeviceAttrs & { prevId: string }
-  ): { devices: Device[]; id: string };
+  filterDevices(props: DeviceAttrs): { devices: Device[]; hostId: string };
   removeFile(id: string): void;
   filterFiles(): void;
   addFile(file: {
     mimetype: string;
     size: number;
     filename: string;
+    name: string;
   }): { expiration: Date; id: string };
 }
 
@@ -51,29 +50,31 @@ export const UserSchema = new mongoose.Schema<UserDoc>({
   },
   devices: [
     {
-      socketId: String,
-      device: {
-        name: { type: String, required: false },
-        type: {
-          type: String,
-          required: true,
-          enum: ["ios", "android", "windows", "macos", "web"],
-        },
-        os: {
-          type: String,
-          required: true,
-        },
-        version: {
-          type: String,
-          required: true,
-        },
-        pushToken: String,
+      id: String,
+      name: { type: String, required: false },
+      type: {
+        type: String,
+        required: true,
+        enum: ["ios", "android", "windows", "macos", "web"],
       },
+      os: {
+        type: String,
+        required: true,
+      },
+      version: {
+        type: String,
+        required: true,
+      },
+      pushToken: String,
     },
   ],
   files: [
     {
       filename: {
+        type: String,
+        required: true,
+      },
+      name: {
         type: String,
         required: true,
       },

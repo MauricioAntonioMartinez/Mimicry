@@ -29,7 +29,6 @@ export const checkJwt = async (
 
   // if (!bearer) throw new Error("Authorization required");
   // const token = bearer.split(" ").pop();
-  console.log(`Dummy token ${bearer}`);
   const user = await User.findOne({ username: "mcuve" });
   if (!user) throw new Error("Not user was found");
 

@@ -36,12 +36,12 @@ async function main() {
 
   app.use(express.static(__dirname + "/public"));
 
+  wsServer = new WebSocketServer(ws);
+
   app.use(userRouter);
   app.use(checkJwt);
   // ws.use(currentUser);
   app.use(fileRouter);
-
-  wsServer = new WebSocketServer(ws);
 
   app.use(errorHandler);
 

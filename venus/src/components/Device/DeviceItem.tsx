@@ -17,7 +17,6 @@ const DeviceItem = ({ device }: Props) => {
 
   const isWeb = device.type === "web";
 
-  console.log(device);
   return (
     <TouchableCmp style={styles.item}>
       <View style={styles.main}>

@@ -1,28 +1,22 @@
 import { v4 as uuidv4 } from "uuid";
-import { wsServer } from "../..";
 import { DeviceAttrs } from "../Device";
 import { UserSchema } from "./User";
 
-UserSchema.methods.filterDevices = function ({
-  prevId,
-  ...device
-}: DeviceAttrs & { prevId: string }) {
-  const newId = uuidv4();
-  this.devices = this.devices.filter((d) => d.socketId !== prevId);
-  device.pushToken = wsServer.socket.handshake.auth.token;
+UserSchema.methods.filterDevices = function (device: DeviceAttrs) {
+  const hostId = uuidv4();
+  const prevId = device.id;
+  if (prevId) this.devices = this.devices.filter((d) => d.id !== prevId);
   this.devices.push({
-    socketId: newId,
-    device,
+    ...device,
+    id: hostId,
   });
 
   const devices = this.devices.map((d) => {
-    Reflect.deleteProperty(d, "pushToken");
-    return {
-      id: d.socketId,
-      ...d.device,
-    };
+    const device = { ...d };
+    Reflect.deleteProperty(device, "pushToken");
+    return d;
   });
-  return { devices, id: newId };
+  return { devices, hostId };
 };
 
 UserSchema.methods.filterFiles = function () {
@@ -36,11 +30,14 @@ UserSchema.methods.filterFiles = function () {
 UserSchema.methods.addFile = function ({
   filename,
   size,
+
+  name,
   mimetype,
 }: {
   mimetype: string;
   size: number;
   filename: string;
+  name: string;
 }) {
   const expiration = new Date().getTime() + this.expirationType;
   const id = uuidv4();
@@ -49,6 +46,7 @@ UserSchema.methods.addFile = function ({
     type: mimetype,
     size: size,
     filename: filename,
+    name,
     expiration: new Date(expiration),
   });
   return { id, expiration };

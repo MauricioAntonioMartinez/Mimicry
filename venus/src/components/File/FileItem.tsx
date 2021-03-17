@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Button, Image, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constant/color";
 import { Preview } from "../../constant/previews";
 import { File } from "../../models/File";
@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const FileItem = ({ file }: Props) => {
+  console.log(file);
   return (
     <Card>
       <View style={styles.container}>
@@ -23,6 +24,7 @@ export const FileItem = ({ file }: Props) => {
         </View>
         <View style={styles.content}>
           <Text style={styles.fileName}>{file.name}</Text>
+          <Button title="Download" onPress={() => {}} />
         </View>
       </View>
     </Card>

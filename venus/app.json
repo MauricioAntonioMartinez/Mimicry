@@ -24,8 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.mcuve.shareapp",
-      "useNextNotifications": true
+      "package": "com.mcuve.shareapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

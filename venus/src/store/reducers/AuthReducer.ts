@@ -7,6 +7,7 @@ const initialState: RootStore["auth"] = {
     username: "mcuve",
   },
   token: "mcuve",
+  isAuthenticated: false,
 };
 
 export const authReducer = (
@@ -19,6 +20,7 @@ export const authReducer = (
         ...state,
         token: action.payload.token,
         user: action.payload.user,
+        isAuthenticated: true,
       };
     case Actions.SET_USER:
       return {

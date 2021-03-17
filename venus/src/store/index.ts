@@ -10,12 +10,14 @@ export interface RootStore {
   device: {
     devices: Device[];
     qtyActive: number;
+    hostId: string;
   };
   auth: {
     token?: string;
     expiresIn?: number;
     refreshToken?: string;
     user: { username: string; picture: string };
+    isAuthenticated: boolean;
   };
   file: {
     id: string;
