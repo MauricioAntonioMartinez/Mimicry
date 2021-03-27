@@ -20,7 +20,7 @@ export interface UserDoc extends mongoose.Document {
   removeFile(id: string): void;
   filterFiles(): void;
   addFile(file: {
-    mimetype: string;
+    type: string;
     size: number;
     filename: string;
     name: string;

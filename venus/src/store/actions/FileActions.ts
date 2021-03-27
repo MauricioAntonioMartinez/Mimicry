@@ -1,12 +1,11 @@
 import axios from "axios";
-import download from "downloadjs";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import { API } from "../../constant/api";
 import { _web_ } from "../../constant/platform";
-import { downloadFile } from "../../healpers/downloadFile";
 import { Actions } from "../../lib/actions";
+import downloadFile from "../../lib/download";
 import { AppThunk } from "../../lib/reduxTypes";
 import { File, ReceivedFile } from "../../models/File";
 
@@ -21,25 +20,27 @@ export const sendFile = (): AppThunk<Promise<any>> => {
 
     if (data.type !== "success" || !hostId) return;
 
+    const { name, type } = data;
+    const url = `${API}/upload-multipart`;
+    let newFile = new File({
+      id: file.id,
+      filename: file.filename,
+      name,
+      size: file.size,
+      type,
+      expiration: file.expiration,
+    });
+
     try {
-      const { name } = data;
-      const url = `${API}/upload-multipart`;
-      let newFile = new File({
-        id: file.id,
-        filename: file.filename,
-        name,
-        size: file.size,
-        type: file.type,
-        expiration: file.expiration,
-      });
       if (!_web_) {
-        await FileSystem.uploadAsync(url, data.uri, {
+        const res = await FileSystem.uploadAsync(url, data.uri, {
           uploadType: FileSystem.FileSystemUploadType.MULTIPART,
           fieldName: "test",
           parameters: {
             hostId,
           },
         });
+        newFile.type = res.mimeType || "";
       } else {
         if (!data.file) return;
         const formData = new FormData();
@@ -54,6 +55,7 @@ export const sendFile = (): AppThunk<Promise<any>> => {
         newFile.id = res.data.id;
         newFile.name = res.data.name;
         newFile.filename = res.data.filename;
+        newFile.type = res.data.type;
       }
 
       dispatch({
@@ -81,14 +83,10 @@ export const setFile = ({
   return async (dispatch, getState) => {
     const localHostId = getState().device.hostId;
 
-    console.log(localHostId, hostId);
-
     if (localHostId === hostId) return;
 
     if (_web_) {
-      const url = `${API}/${filename}`;
-      const res = await axios.get(url, { responseType: "blob" });
-      const didSave = await download(res.data, originalName);
+      const didSave = await downloadFile(filename, originalName);
       if (!didSave) return;
       return dispatch({
         type: Actions.ADD_FILE,
@@ -108,7 +106,6 @@ export const setFile = ({
     dispatch({
       type: Actions.SET_FILE,
       payload: {
-        url: `${API}/${filename}`,
         filename: originalName,
         serverFileName: filename,
         size,
@@ -124,12 +121,11 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
   return async (dispatch, getStore) => {
     try {
       const store = getStore();
-      const { uri } = await FileSystem.downloadAsync(
-        store.file.url as string,
-        FileSystem.documentDirectory + name
-      );
+      console.log("STORE FILE");
+      await downloadFile(store.file.serverFilename, name);
+      console.log("FILE DOWNLOADED");
+
       const file = store.file;
-      await downloadFile(uri);
       const newFile = new File({
         id: file.id,
         filename: file.filename as string,
@@ -146,6 +142,7 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
         },
       });
     } catch (e) {
+      console.log(e.message);
       Alert.alert("Something went wrong", "Couldn't download the file", [
         {
           text: "Okay",
@@ -154,6 +151,23 @@ export const storeFile = (name: string): AppThunk<Promise<any>> => {
           },
         },
       ]);
+    }
+  };
+};
+
+export const downloadFileHandler = (filename: string): AppThunk<any> => {
+  return async () => {
+    try {
+      await downloadFile(filename, filename);
+      Alert.alert(
+        "File successfully downloaded, check your file system storage"
+      );
+    } catch (error) {
+      console.log(error.message);
+      Alert.alert(
+        "Something went wrong",
+        "We couldn't download the image sorry."
+      );
     }
   };
 };

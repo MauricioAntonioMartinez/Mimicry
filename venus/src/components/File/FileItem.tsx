@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
 import { colors } from "../../constant/color";
 import { Preview } from "../../constant/previews";
 import { File } from "../../models/File";
+import * as fileActions from "../../store/actions/FileActions";
 import { Card } from "../ui/Card";
 
 interface Props {
@@ -11,6 +13,9 @@ interface Props {
 
 export const FileItem = ({ file }: Props) => {
   console.log(file);
+
+  const dispatch = useDispatch();
+
   return (
     <Card>
       <View style={styles.container}>
@@ -18,13 +23,18 @@ export const FileItem = ({ file }: Props) => {
           <Image
             style={styles.image}
             source={{
-              uri: Preview.unknown,
+              uri: file?.getUri() || Preview.unknown,
             }}
           />
         </View>
         <View style={styles.content}>
           <Text style={styles.fileName}>{file.name}</Text>
-          <Button title="Download" onPress={() => {}} />
+          <Button
+            title="Download"
+            onPress={() =>
+              dispatch(fileActions.downloadFileHandler(file.filename))
+            }
+          />
         </View>
       </View>
     </Card>

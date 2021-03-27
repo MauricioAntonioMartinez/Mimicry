@@ -24,7 +24,7 @@ userRouter.post(
   async (req: Request, res: Response) => {
     const { username } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: "mcuve" });
     return res.status(200).json({ user, token: "abc" });
   }
 );
@@ -43,13 +43,13 @@ userRouter.post(
     const username = req.body.username;
 
     const user = await User.findOne({ username });
+
     if (!user) return res.status(400).json({ message: "Cannot find user" });
 
     const { hostId, devices } = user.filterDevices(req.body);
     user.filterFiles();
     await user.save();
-
-    console.log(devices);
+    console.log("MY DEVICES", devices);
 
     wsServer.socket.to(user.roomId).emit("set-devices", { devices });
 

@@ -25,8 +25,9 @@ fileRouter.post(
   uploadStore.single("test"),
   async (req: Request, res: Response) => {
     const filename = req.file.path.split("/").pop() as string;
+    console.log(req.file);
     const file = req.user!.addFile({
-      mimetype: req.file.mimetype,
+      type: req.file.mimetype,
       size: req.file.size,
       filename,
       name: req.file.originalname,
@@ -65,6 +66,7 @@ fileRouter.post(
       id: file.id,
       filename: req.file.filename,
       name: req.file.originalname,
+      type: req.file.mimetype,
     });
   }
 );

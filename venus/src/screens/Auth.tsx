@@ -28,7 +28,13 @@ export const AuthScreen = () => {
           style={styles.input}
           onChangeText={(v) => setFields({ ...fields, password: v })}
         />
-        <Button color={colors.primary} title="Login" onPress={submitHandler} />
+        <View style={styles.buttonWrapper}>
+          <Button
+            color={colors.primary}
+            title="Login"
+            onPress={submitHandler}
+          />
+        </View>
       </View>
     </View>
   );
@@ -42,17 +48,20 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   input: {
-    padding: 5,
+    padding: 8,
     width: "100%",
     margin: 5,
     borderColor: "#ccc",
     borderWidth: 1,
   },
+  buttonWrapper: {
+    marginVertical: 10,
+  },
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    height: 200,
+    width: "100%",
     padding: 10,
     ...Platform.select({
       android: {
@@ -68,7 +77,9 @@ const styles = StyleSheet.create({
         shadowRadius: 6.27,
       },
       web: {
+        width: "50%",
         borderWidth: 1,
+        flex: 1 / 2,
         borderColor: "#ccc",
         boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px;",
       },

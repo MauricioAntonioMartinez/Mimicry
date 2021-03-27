@@ -9,7 +9,7 @@ export const FileControls = () => {
   const dispatch = useDispatch();
   return (
     <Button
-      color={colors.secondary}
+      color={colors.primary}
       title="Send File"
       onPress={() => dispatch(fileActions.sendFile())}
     />

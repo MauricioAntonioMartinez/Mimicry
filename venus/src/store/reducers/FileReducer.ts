@@ -1,5 +1,6 @@
 import { RootStore } from "..";
 import { Action, Actions } from "../../lib/actions";
+import { File } from "../../models/File";
 
 const initialState: RootStore["file"] = {
   filename: "",
@@ -7,7 +8,6 @@ const initialState: RootStore["file"] = {
   serverFilename: "",
   size: 0,
   type: "",
-  url: "",
   shouldPickName: false,
   files: [],
   expiration: new Date(),
@@ -22,7 +22,6 @@ export const fileReducer = (
       return {
         ...state,
         filename: action.payload.filename,
-        url: action.payload.url,
         serverFilename: action.payload.serverFileName,
         shouldPickName: true,
         size: action.payload.size,
@@ -37,7 +36,7 @@ export const fileReducer = (
     case Actions.SYNC:
       return {
         ...state,
-        files: action.payload.files,
+        files: action.payload.files.map((f: any) => new File(f)),
       };
     case Actions.RESET_FILE:
       return { ...initialState, files: state.files };

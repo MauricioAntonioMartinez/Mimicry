@@ -1,15 +1,22 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { colors } from "../constant/color";
 import { _android_ } from "../constant/platform";
 import { RootDrawerParamList, Screens } from "../lib/navigationTypes";
+import * as authActions from "../store/actions/AuthActions";
 import { DevicesStack } from "./DevicesNavigation";
 import { VenusStack } from "./VenusStack";
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
 export const DrawerNavigator = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(authActions.setUser());
+  }, []);
+
   return (
     <Drawer.Navigator
       initialRouteName={Screens.Home}

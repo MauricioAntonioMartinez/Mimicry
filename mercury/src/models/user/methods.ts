@@ -30,11 +30,10 @@ UserSchema.methods.filterFiles = function () {
 UserSchema.methods.addFile = function ({
   filename,
   size,
-
   name,
-  mimetype,
+  type,
 }: {
-  mimetype: string;
+  type: string;
   size: number;
   filename: string;
   name: string;
@@ -43,9 +42,9 @@ UserSchema.methods.addFile = function ({
   const id = uuidv4();
   this.files.push({
     id,
-    type: mimetype,
-    size: size,
-    filename: filename,
+    type,
+    size,
+    filename,
     name,
     expiration: new Date(expiration),
   });

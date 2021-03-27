@@ -27,7 +27,6 @@ export const checkUser = async () => {
 
 export const syncHandler = async (_: any, cb: any) => {
   const user = await checkUser();
-  console.log("REJOIN", user?.roomId);
   wsServer.socket.join(user?.roomId);
   cb({ devices: user?.devices, files: user?.files });
 };

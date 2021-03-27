@@ -22,16 +22,22 @@ export const setCredentials = (credentials: {
   };
 };
 
+// TODO: implement as we have the authentication done
+// TODO: Download multiple times the same file, and fix style of the doc item
+// TODO: show the image if the type set, check this as well
+
 export const setUser = (): AppThunk<Promise<any>> => {
   return async (dispatch) => {
     try {
       // TODO: in a future you will have a token set in the hostId
       const hostId = await AsyncStorage.getItem("hostId");
       const token = await getToken();
+
       const socket = io(ENDPOINT, {
         autoConnect: true,
-        auth: { token, username: "mcuve", hostId: "fasdf" },
+        auth: { token, username: "mcuve", hostId },
       });
+
       dispatch(socketActions.setSocket(socket));
 
       const { data } = await axios.post(`${API}/users/initialize`, {
@@ -72,7 +78,6 @@ export const setUser = (): AppThunk<Promise<any>> => {
           devices: data.files,
         },
       });
-      console.log(data.hostId);
       await AsyncStorage.setItem("hostId", data.hostId);
     } catch (e) {
       console.log(e.message);
@@ -104,14 +109,18 @@ export const loginUser = (payload: {
   password: string;
 }): AppThunk => {
   return async (dispatch) => {
-    const { data } = await axios.post(`${API}/users/login`, payload);
+    try {
+      const { data } = await axios.post(`${API}/users/login`, payload);
 
-    return dispatch({
-      type: Actions.SET_AUTH,
-      payload: {
-        user: data.user,
-        token: data.token,
-      },
-    });
+      return dispatch({
+        type: Actions.SET_AUTH,
+        payload: {
+          user: data.user,
+          token: data.token,
+        },
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 };
