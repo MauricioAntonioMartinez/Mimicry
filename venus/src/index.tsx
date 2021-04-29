@@ -9,6 +9,7 @@ import ReduxThunk from "redux-thunk";
 import { NoPermissions } from "./components/ui/NoPermissions";
 import { AppNavigation } from "./navigation";
 import { authReducer } from "./store/reducers/AuthReducer";
+import { clipBoardReducer } from "./store/reducers/ClipBoardReducer";
 import { devicesReducer } from "./store/reducers/DevicesReducer";
 import { fileReducer } from "./store/reducers/FileReducer";
 import { socketReducer } from "./store/reducers/SocketReducer";
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   device: devicesReducer,
   auth: authReducer,
   file: fileReducer,
+  clipBoard: clipBoardReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

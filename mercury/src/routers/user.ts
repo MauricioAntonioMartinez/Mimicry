@@ -43,6 +43,7 @@ userRouter.post(
     const username = req.body.username;
 
     const user = await User.findOne({ username });
+    console.log(user);
 
     if (!user) return res.status(400).json({ message: "Cannot find user" });
 

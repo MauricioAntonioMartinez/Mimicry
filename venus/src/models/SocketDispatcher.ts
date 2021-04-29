@@ -49,10 +49,18 @@ export class SocketDispatcher {
     //   });
     // });
 
-    this.socket.on("file", async (file: ReceivedFile) => {
-      console.log("FILE RECEIVED");
-      this.dispatch(fileActions.setFile(file));
-    });
+    this.socket.on("file", async (file: ReceivedFile) =>
+      this.dispatch(fileActions.setFile(file))
+    );
+
+    this.socket.on("new-clipboard", async (clip: string) =>
+      this.dispatch({
+        type: Actions.SET_CLIP,
+        payload: {
+          clip,
+        },
+      })
+    );
 
     this.socket.on("remove-file", (id: string) =>
       this.dispatch({

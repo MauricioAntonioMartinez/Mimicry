@@ -8,6 +8,7 @@ import { checkJwt } from "./middlewares/currentUser";
 import { errorHandler } from "./middlewares/errorHanlder";
 import { User } from "./models/user/User";
 import { fileRouter } from "./routers/file";
+import { roomRouter } from "./routers/room";
 import { userRouter } from "./routers/user";
 import { WebSocketServer } from "./Ws";
 
@@ -39,6 +40,7 @@ async function main() {
   wsServer = new WebSocketServer(ws);
 
   app.use(userRouter);
+  app.use(roomRouter);
   app.use(checkJwt);
   // ws.use(currentUser);
   app.use(fileRouter);

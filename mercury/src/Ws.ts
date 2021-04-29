@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { checkUser } from "./handlers/roomHandler";
+import { ClipBoardTopic } from "./topics/ClipBoard";
 import { FileTopic } from "./topics/File";
 import Room from "./topics/Room";
 
@@ -24,6 +25,7 @@ export class WebSocketServer {
       this._socket = socket;
       Room.listen();
       FileTopic.listen();
+      ClipBoardTopic.listen();
       socket.on("disconnect", this.onDisconnect.bind(this));
     });
   }

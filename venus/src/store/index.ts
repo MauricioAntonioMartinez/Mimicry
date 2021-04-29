@@ -30,4 +30,9 @@ export interface RootStore {
     shouldPickName: boolean;
     files: File[];
   };
+  clipBoard: {
+    roomId?: string;
+    clips: string[];
+  };
+  rooms: string[]; // #TODO pending implementation
 }

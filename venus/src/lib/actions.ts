@@ -16,6 +16,9 @@ export enum Actions {
   REMOVE_FILE = "REMOVE_FILE",
   RESET_FILE = "RESET_FILE",
   SYNC = "SYNC",
+  SET_CLIP = "SET_CLIP",
+  SET_CLIPS = "SET_CLIPS",
+  SET_ROOM = "SET_ROOM",
 }
 
 export interface Action {
